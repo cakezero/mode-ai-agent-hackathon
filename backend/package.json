@@ -1,0 +1,17 @@
+{
+  "name": "mode-ai-agent-hackathon",
+  "module": "index.ts",
+  "type": "module",
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "dependencies": {
+    "@ai16z/eliza": "^0.1.6-alpha.4",
+    "@goat-sdk/core": "^0.4.0",
+    "dotenv": "^16.4.7",
+    "viem": "^2.21.55"
+  }
+}
