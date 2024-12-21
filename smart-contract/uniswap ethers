@@ -1,0 +1,51 @@
+const { ethers } = require("ethers");
+
+// Replace with your Infura, Alchemy, or other provider URL
+const provider = new ethers.providers.JsonRpcProvider("https://mainnet.infura.io/v3/YOUR_INFURA_PROJECT_ID");
+
+// Your wallet private key
+const walletPrivateKey = "YOUR_WALLET_PRIVATE_KEY";
+const wallet = new ethers.Wallet(walletPrivateKey, provider);
+
+// Uniswap V2 Router ABI
+const uniswapV2RouterABI = [
+  "function swapExactETHForTokens(uint256 amountOutMin, address[] calldata path, address to, uint256 deadline) external payable returns (uint256[] memory amounts)",
+  "function getAmountsOut(uint256 amountIn, address[] memory path) public view returns (uint256[] memory amounts)"
+];
+
+// Uniswap V2 Router Address
+const uniswapV2RouterAddress = "0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D";
+const uniswapV2Router = new ethers.Contract(uniswapV2RouterAddress, uniswapV2RouterABI, wallet);
+
+// Example: Swapping ETH for DAI
+(async () => {
+  const daiAddress = "0x6B175474E89094C44Da98b954EedeAC495271d0F"; // DAI Token address on Ethereum
+  const wethAddress = "0xC02aaa39b223FE8D0A0E5C4F27eAD9083C756Cc2"; // WETH Token address
+
+  const amountIn = ethers.utils.parseEther("0.01"); // 0.01 ETH
+  const path = [wethAddress, daiAddress];
+  const to = wallet.address;
+  const deadline = Math.floor(Date.now() / 1000) + 60 * 20; // 20 minutes from now
+
+  // Estimate output and execute the swap
+  try {
+    const amountsOut = await uniswapV2Router.getAmountsOut(amountIn, path);
+    const amountOutMin = amountsOut[1].mul(95).div(100); // Slippage tolerance: 5%
+
+    console.log(`Amount Out Min: ${ethers.utils.formatUnits(amountOutMin, 18)} DAI`);
+
+    const tx = await uniswapV2Router.swapExactETHForTokens(
+      amountOutMin,
+      path,
+      to,
+      deadline,
+      { value: amountIn }
+    );
+
+    console.log("Transaction Hash:", tx.hash);
+    await tx.wait();
+    console.log("Swap executed successfully!");
+  } catch (err) {
+    console.error("Error executing swap:", err);
+  }
+})();
