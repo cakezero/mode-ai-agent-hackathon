@@ -2,7 +2,7 @@ import { xai } from "@ai-sdk/xai";
 import { generateText } from "ai";
 import readline from 'node:readline';
 
-import { createWalletClient, http, getAddress } from "viem";
+import { createWalletClient, http, getAddress, sendTransaction } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
 import { mode } from "viem/chains";
 
