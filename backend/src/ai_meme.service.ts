@@ -1,13 +1,15 @@
 import { Tool } from "@goat-sdk/core";
-import { memeParams, addETHParams, swapMemeETHParams, swapETHParams } from './parameters';
+import { memeParams, addETHParams, swapMemeETHParams, swapETHParams, tokenParam } from './parameters';
 import { parseEther, WalletClient } from 'viem';
-import { mode, sepolia } from "viem/chains";
-import { publicClient } from "./viemClient/client";
+import { mode, modeTestnet } from "viem/chains";
+import { getPublicClient } from "./viemClient/client";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm"
 import { memeProp } from './ercProp/memeProp'
 import { z } from "zod";
 
 const MEME_TOKEN_ADDRESS: `0x${string}`[] = []
+
+const publicClient = getPublicClient();
 export class MemeService {
     private memeTokenFactoryAddress: `0x${string}`
     private memeTokenAddress: `0x${string}`
@@ -18,7 +20,7 @@ export class MemeService {
         name: "create-meme",
         description: "create a meme token",
     })
-    async create_token(walletClient: WalletClient, parameters: memeParams): Promise<`0x${string}` | string | undefined> {
+    async create_meme_token(walletClient: WalletClient, parameters: memeParams): Promise<`0x${string}` | string | undefined> {
         try {
             const [account] = await walletClient.getAddresses();
             const args: [string, string, bigint] = [parameters.tokenName, parameters.tokenSymbol, parameters.tokenSupply]
@@ -27,17 +29,17 @@ export class MemeService {
                 ...memeProp,
                 args,
                 account,
-                chain: sepolia
+                chain: modeTestnet
             })
 
             if (!FactoryHash) return "Wallet couldn't deploy contract"
             console.log(`Transaction Hash: ${FactoryHash}`)
 
-            const factoryReceipt = await publicClient.waitForTransactionReceipt({hash: FactoryHash})
+            const factoryReceipt = await publicClient!.waitForTransactionReceipt({hash: FactoryHash})
             const factoryContract = factoryReceipt.contractAddress as `0x${string}`;
             MEME_TOKEN_ADDRESS.push(factoryContract)
 
-            const result = await publicClient.readContract({
+            const result = await publicClient!.readContract({
                 ...memeProp,
                 address: factoryContract,
                 functionName: "getTokenAddress"
@@ -58,7 +60,7 @@ export class MemeService {
         name: "get token address",
         description: "get the address of the deployed meme"
     })
-    async getMemeAddress() {
+    async getMemeAddress(parameters: tokenParam) {
         if (!this.memeTokenAddress) return "You don't have any deployed meme tokens"
         return this.memeTokenAddress
     }

@@ -9,24 +9,10 @@ import { PEPE, USDC, erc20 } from "@goat-sdk/plugin-erc20";
 
 import { sendETH } from "@goat-sdk/wallet-evm";
 import { viem } from "@goat-sdk/wallet-viem";
-// import { wallet } from './viemClient/client';
-import { createWalletClient, http } from 'viem';
-import { modeTestnett } from 'viem/chains';
-import { privateKeyToAccount } from 'viem/accounts';
-// import  * as dotenv from 'dotenv';
-// dotenv.config();
+import { getWalletClient } from './src/viemClient/client';
 
-require('dotenv').config();
-
-console.log('\n',{pri: process.env.WALLET_PRIVATE_KEY}, '\n')
-
-const account = privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as `0x${string}`);
-
-const wallet = createWalletClient({
-    account: account,
-    transport: http(process.env.RPC_PROVIDER_URL as `https://${string}`),
-    chain: modeTestnett
-});
+import  * as dotenv from 'dotenv';
+dotenv.config();
 
 const messages: {role: string, content: string}[] = []
 
@@ -37,7 +23,7 @@ const instance = readline.createInterface({
 
 const prompter = () => {
     instance.question("\nEnter prompt (type q or quit to end the prompt): ", async (message: string) => {
-        console.log(`Message recieved: ${message}`);
+        // console.log(`Message recieved: ${message}`);
         // if (message === 'quit' || "q") {
         //     instance.close();
         //     return;
@@ -50,7 +36,7 @@ const prompter = () => {
 }
 
 const handlePrompt = async (prompt: string) => {
-
+    const wallet = getWalletClient();
     const tools = await getOnChainTools({
         wallet: viem(wallet),
         plugins: [sendETH(), createMeme(), erc20({ tokens: [USDC, PEPE] })],
@@ -67,7 +53,7 @@ const handlePrompt = async (prompt: string) => {
     });
 
     // console.dir(result.steps, {depth: Infinity});
-    console.log(`Ai Response: ${result.text}` );
+    console.log(`\nAi Response: ${result.text}\n`);
 }
 
 prompter();

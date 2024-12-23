@@ -4,7 +4,7 @@ import readline from 'node:readline';
 
 import { createWalletClient, http } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { mode } from "viem/chains";
+import { modeTestnet } from "viem/chains";
 
 import { getOnChainTools } from "@goat-sdk/adapter-vercel-ai";
 import { PEPE, USDC, erc20 } from "@goat-sdk/plugin-erc20";
@@ -20,7 +20,7 @@ const account = privateKeyToAccount(process.env.WALLET_PRIVATE_KEY);
 const walletClient = createWalletClient({
     account: account,
     transport: http(process.env.RPC_PROVIDER_URL),
-    chain: mode,
+    chain: modeTestnet,
 });
 
 // const check = getAddress('0xA0b86991C6218B36c1D19D4a2e9Eb0cE3606eB48')
