@@ -17,13 +17,8 @@ export class MemeService {
     @Tool({
         name: "create-meme",
         description: "create a meme token",
-        parameters: z.object({
-            tokenName: z.string().describe("The name of the meme token"),
-            tokenSymbol: z.string().describe("The symbol of the meme token"),
-            tokenSupply: z.bigint().describe("The total amount of token to be in circulation")
-        })
     })
-    async function create_token(walletClient: WalletClient, parameters: memeParams): Promise<`0x${string}` | string | undefined> {
+    async create_token(walletClient: WalletClient, parameters: memeParams): Promise<`0x${string}` | string | undefined> {
         try {
             const [account] = await walletClient.getAddresses();
             const args: [string, string, bigint] = [parameters.tokenName, parameters.tokenSymbol, parameters.tokenSupply]
