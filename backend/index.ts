@@ -39,7 +39,7 @@ const handlePrompt = async (prompt: string) => {
     const wallet = getWalletClient();
     const tools = await getOnChainTools({
         wallet: viem(wallet),
-        plugins: [sendETH(), createMeme(), erc20({ tokens: [USDC, PEPE] })],
+        plugins: [sendETH(), createMeme(wallet), erc20({ tokens: [USDC, PEPE] })],
     });
     
     messages.push({role: 'user', content: prompt});

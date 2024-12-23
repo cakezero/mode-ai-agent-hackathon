@@ -1,6 +1,6 @@
 import { Tool } from "@goat-sdk/core";
 import { memeParams, addETHParams, swapMemeETHParams, swapETHParams, tokenParam } from './parameters';
-import { parseEther, WalletClient } from 'viem';
+import { parseEther } from 'viem';
 import { mode, modeTestnet } from "viem/chains";
 import { getPublicClient } from "./viemClient/client";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm"
@@ -13,20 +13,23 @@ const publicClient = getPublicClient();
 export class MemeService {
     private memeTokenFactoryAddress: `0x${string}`
     private memeTokenAddress: `0x${string}`
+    private walletClient;
 
-    constructor() {}
+    constructor(wallet) {
+        this.walletClient = wallet;
+    }
 
     @Tool({
         name: "create-meme",
         description: "create a meme token",
     })
-    async create_meme_token(walletClient: WalletClient, parameters: memeParams): Promise<`0x${string}` | string | undefined> {
+    async create_meme_token(parameters: memeParams): Promise<`0x${string}` | string | undefined> {
         console.log('hi')
         try {
-            const [account] = await walletClient.getAddresses();
+            const [account] = await this.walletClient.getAddresses();
             const args: [string, string, bigint] = [parameters.tokenName, parameters.tokenSymbol, parameters.tokenSupply]
 
-            const FactoryHash = await walletClient.deployContract({
+            const FactoryHash = await this.walletClient.deployContract({
                 ...memeProp,
                 args,
                 account,
