@@ -21,6 +21,7 @@ export class MemeService {
         description: "create a meme token",
     })
     async create_meme_token(walletClient: WalletClient, parameters: memeParams): Promise<`0x${string}` | string | undefined> {
+        console.log('hi')
         try {
             const [account] = await walletClient.getAddresses();
             const args: [string, string, bigint] = [parameters.tokenName, parameters.tokenSymbol, parameters.tokenSupply]
@@ -94,13 +95,13 @@ export class MemeService {
         name: 'buy-meme-eth',
         description: "Swap ETH to meme token",
     })
-    async buyMemeETH(walletClient: EVMWalletClient, parameter: swapETHParams): Promise<`0x${string}` | string | undefined> {
+    async buyMemeETH(walletClient: EVMWalletClient, parameters: swapETHParams): Promise<`0x${string}` | string | undefined> {
         try {
             const receipt = await walletClient.sendTransaction({
                 to: this.memeTokenFactoryAddress,
                 functionName: "swapETHForMeme",
                 abi: memeProp.abi,
-                value: parseEther((parameter.ETHAmount).toString()),
+                value: parseEther((parameters.ETHAmount).toString()),
             })
 
             if(!receipt) return "Wallet couldn't buy meme token with ETH"
@@ -117,9 +118,9 @@ export class MemeService {
         name: "swap-meme-eth",
         description: "Swap meme token to ETH"
     })
-    async SwapMemeETH(walletClient: EVMWalletClient, parameter: swapMemeETHParams): Promise<`0x${string}` | undefined | string> {
+    async SwapMemeETH(walletClient: EVMWalletClient, parameters: swapMemeETHParams): Promise<`0x${string}` | undefined | string> {
         try {
-            const args = [parameter.MemeAmount]
+            const args = [parameters.MemeAmount]
             const receipt = await walletClient.sendTransaction({
                 to: this.memeTokenFactoryAddress,
                 functionName: "swapMemeForETH",
