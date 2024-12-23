@@ -11,19 +11,21 @@ import { sendETH } from "@goat-sdk/wallet-evm";
 import { viem } from "@goat-sdk/wallet-viem";
 // import { wallet } from './viemClient/client';
 import { createWalletClient, http } from 'viem';
-import { sepolia } from 'viem/chains';
+import { modeTestnett } from 'viem/chains';
 import { privateKeyToAccount } from 'viem/accounts';
-import  * as dotenv from 'dotenv';
-dotenv.config();
+// import  * as dotenv from 'dotenv';
+// dotenv.config();
+
+require('dotenv').config();
 
 console.log('\n',{pri: process.env.WALLET_PRIVATE_KEY}, '\n')
 
-const account = privateKeyToAccount('0x1080844a63f7b1a13ae0b976dc6eae09ac0e664ae0559582d758f9b39ae8fb5f' as `0x${string}`);
+const account = privateKeyToAccount(process.env.WALLET_PRIVATE_KEY as `0x${string}`);
 
 const wallet = createWalletClient({
     account: account,
     transport: http(process.env.RPC_PROVIDER_URL as `https://${string}`),
-    chain: sepolia
+    chain: modeTestnett
 });
 
 const messages: {role: string, content: string}[] = []

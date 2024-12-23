@@ -1,9 +1,9 @@
 import { type Chain, PluginBase } from "@goat-sdk/core";
 import type { EVMWalletClient } from "@goat-sdk/wallet-evm";
 import { MemeService } from "./ai_meme.service";
-import { sepolia } from "viem/chains";
+import { modeTestnet } from "viem/chains";
 
-const SUPPORTED_CHAINS = [sepolia];
+const SUPPORTED_CHAINS = [modeTestnet];
 export class CreateMeme extends PluginBase<EVMWalletClient> {
   constructor() {
     // Import the tools we created in the previous step here
