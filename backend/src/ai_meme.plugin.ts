@@ -5,13 +5,13 @@ import { modeTestnet } from "viem/chains";
 
 const SUPPORTED_CHAINS = [modeTestnet];
 export class CreateMeme extends PluginBase<EVMWalletClient> {
-  constructor(wallet) {
+  constructor() {
     // Import the tools we created in the previous step here
-    super("createMeme", [new MemeService(wallet)]);
+    super("createMeme", [new MemeService()]);
   }
 
   supportsChain = (chain: Chain) =>
     chain.type === "evm" && SUPPORTED_CHAINS.some((c) => c.id === chain.id);
 }
 
-export const createMeme = (wallet) => new CreateMeme(wallet);
+export const createMeme = () => new CreateMeme();

@@ -2,11 +2,9 @@
   "name": "mode-ai-agent-hackathon",
   "module": "index.ts",
   "type": "module",
-  "scripts": {
-    "dev": "tsx ./test.ts"
-  },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/node": "latest"
   },
   "peerDependencies": {
     "typescript": "^5.7.2"
@@ -15,14 +13,11 @@
     "@ai-sdk/xai": "^1.0.12",
     "@ai16z/eliza": "^0.1.6",
     "@goat-sdk/adapter-vercel-ai": "^0.2.0",
-    "@goat-sdk/core": "^0.4.0",
+    "@goat-sdk/core": "^0.4.1",
     "@goat-sdk/plugin-erc20": "^0.2.2",
     "@goat-sdk/wallet-evm": "^0.2.0",
     "@goat-sdk/wallet-viem": "^0.2.0",
     "dotenv": "^16.4.7",
-    "ts-dotenv": "^0.9.1",
-    "ts-node": "^10.9.2",
-    "tsx": "^4.19.2",
     "viem": "^2.21.57"
   }
 }

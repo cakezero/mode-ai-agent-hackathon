@@ -3,8 +3,8 @@ pragma solidity ^0.8.20;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import './IUniswapV2Router.sol';
-import './IUniswapV2Factory.sol';
+import '../interface/IUniswapV2Router.sol';
+import '../interface/IUniswapV2Factory.sol';
 
 
 contract MemeToken is ERC20 {

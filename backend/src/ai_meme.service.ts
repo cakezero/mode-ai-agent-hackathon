@@ -5,31 +5,28 @@ import { mode, modeTestnet } from "viem/chains";
 import { getPublicClient } from "./viemClient/client";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm"
 import { memeProp } from './ercProp/memeProp'
-import { z } from "zod";
+import { type WalletClient } from 'viem';
 
 const MEME_TOKEN_ADDRESS: `0x${string}`[] = []
 
 const publicClient = getPublicClient();
 export class MemeService {
-    private memeTokenFactoryAddress: `0x${string}`
-    private memeTokenAddress: `0x${string}`
-    private walletClient;
+    private memeTokenFactoryAddress: `0x${string}` | undefined
+    private memeTokenAddress: `0x${string}` | undefined
 
-    constructor(wallet) {
-        this.walletClient = wallet;
-    }
+    constructor() {}
 
-    @Tool({
+    @Tool({ 
         name: "create-meme",
-        description: "create a meme token",
+        description: "create a meme token"
     })
-    async create_meme_token(parameters: memeParams): Promise<`0x${string}` | string | undefined> {
+    async create_meme_token(walletClient: WalletClient, parameters: memeParams): Promise<string | undefined> {
         console.log('hi')
         try {
-            const [account] = await this.walletClient.getAddresses();
+            const [account] = await walletClient.getAddresses();
             const args: [string, string, bigint] = [parameters.tokenName, parameters.tokenSymbol, parameters.tokenSupply]
 
-            const FactoryHash = await this.walletClient.deployContract({
+            const FactoryHash = await walletClient.deployContract({
                 ...memeProp,
                 args,
                 account,
@@ -56,13 +53,13 @@ export class MemeService {
             // return contractAddress as `0x${string}`;
             return factoryReceipt.transactionHash;
         } catch (error) {
-            throw new Error('error creating meme token:', error);
+            throw new Error(`error creating meme token: ${error}`);
         }
     }
 
     @Tool({
         name: "get token address",
-        description: "get the address of the deployed meme"
+        description: "get the address of the deployed meme",
     })
     async getMemeAddress(parameters: tokenParam) {
         if (!this.memeTokenAddress) return "You don't have any deployed meme tokens"
@@ -89,7 +86,7 @@ export class MemeService {
 
             return receipt.hash;
         } catch (error) {
-            throw new Error('error adding ETH liquidity:', error);
+            throw new Error(`error adding ETH liquidity: ${error}`);
             
         }
     }
@@ -113,13 +110,13 @@ export class MemeService {
 
             return receipt.hash;
         } catch (error) {
-            throw new Error('error buying meme token with ETH:', error)
+            throw new Error(`error buying meme token with ETH: ${error}`)
         }
     }
 
     @Tool({
         name: "swap-meme-eth",
-        description: "Swap meme token to ETH"
+        description: "Swap meme token to ETH",
     })
     async SwapMemeETH(walletClient: EVMWalletClient, parameters: swapMemeETHParams): Promise<`0x${string}` | undefined | string> {
         try {
@@ -135,7 +132,8 @@ export class MemeService {
 
             return receipt.hash
         } catch (error) {
-            throw new Error("error swapping meme token to ETH:", error)
+            throw new Error(`error swapping meme token to ETH: ${error}`)
         }
     }
 }
+

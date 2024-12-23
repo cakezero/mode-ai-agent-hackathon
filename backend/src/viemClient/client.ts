@@ -8,7 +8,6 @@ import {
 import { mode, modeTestnet } from "viem/chains";
 import { privateKeyToAccount } from "viem/accounts";
 
-
 let publicClientInstance: PublicClient | undefined;
 let walletClientInstance: WalletClient | undefined;
 
@@ -38,7 +37,7 @@ export const getPublicClient = () => {
   publicClientInstance = createPublicClient({
     transport: http(process.env.RPC_PROVIDER_URL),
     chain: modeTestnet,
-  });
+  }) as PublicClient;
 
   return publicClientInstance;
 };
