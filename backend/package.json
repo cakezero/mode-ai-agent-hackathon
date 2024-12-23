@@ -20,6 +20,8 @@
     "@goat-sdk/wallet-evm": "^0.2.0",
     "@goat-sdk/wallet-viem": "^0.2.0",
     "dotenv": "^16.4.7",
+    "ts-dotenv": "^0.9.1",
+    "ts-node": "^10.9.2",
     "tsx": "^4.19.2",
     "viem": "^2.21.55"
   }

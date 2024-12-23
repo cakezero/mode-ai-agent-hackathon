@@ -1,11 +1,11 @@
 import { Tool } from "@goat-sdk/core";
-import { memeParams, addETHParams, addUSDCParams, swapMemeETHParams, swapMemeUSDCParams, swapUSDCParams, swapETHParams } from './parameters';
+import { memeParams, addETHParams, swapMemeETHParams, swapETHParams } from './parameters';
 import { parseEther, WalletClient } from 'viem';
-import { erc20Prop } from './ercProp/erc20Prop'
 import { mode, sepolia } from "viem/chains";
 import { publicClient } from "./viemClient/client";
 import { EVMWalletClient } from "@goat-sdk/wallet-evm"
 import { memeProp } from './ercProp/memeProp'
+import { z } from "zod";
 
 const MEME_TOKEN_ADDRESS: `0x${string}`[] = []
 export class MemeService {
@@ -17,25 +17,16 @@ export class MemeService {
     @Tool({
         name: "create-meme",
         description: "create a meme token",
+        parameters: z.object({
+            tokenName: z.string().describe("The name of the meme token"),
+            tokenSymbol: z.string().describe("The symbol of the meme token"),
+            tokenSupply: z.bigint().describe("The total amount of token to be in circulation")
+        })
     })
-    async create_token(walletClient: WalletClient, parameters: memeParams): Promise<`0x${string}` | string | undefined> {
+    async function create_token(walletClient: WalletClient, parameters: memeParams): Promise<`0x${string}` | string | undefined> {
         try {
             const [account] = await walletClient.getAddresses();
-            const args = [parameters.tokenName, parameters.tokenSymbol, parameters.tokenSupply]
-            // const hash = await walletClient.deployContract({
-            //     ...erc20Prop,
-            //     args,
-            //     account,
-            //     chain: sepolia
-            // })
-
-            // if (!hash) return "Wallet couldn't deploy contract"
-            // console.log(`Transaction Hash: ${hash}`)
-
-            // const receipt = await publicClient.waitForTransactionReceipt({hash})
-            // const contractAddress = receipt.contractAddress;
-
-            // this.memeTokenAddress = contractAddress as `0x${string}`;
+            const args: [string, string, bigint] = [parameters.tokenName, parameters.tokenSymbol, parameters.tokenSupply]
 
             const FactoryHash = await walletClient.deployContract({
                 ...memeProp,
@@ -46,15 +37,35 @@ export class MemeService {
 
             if (!FactoryHash) return "Wallet couldn't deploy contract"
             console.log(`Transaction Hash: ${FactoryHash}`)
+
             const factoryReceipt = await publicClient.waitForTransactionReceipt({hash: FactoryHash})
-            MEME_TOKEN_ADDRESS.push(factoryReceipt.contractAddress as `0x${string}`)
+            const factoryContract = factoryReceipt.contractAddress as `0x${string}`;
+            MEME_TOKEN_ADDRESS.push(factoryContract)
 
-            this.memeTokenFactoryAddress = factoryReceipt.contractAddress as `0x${string}`;
+            const result = await publicClient.readContract({
+                ...memeProp,
+                address: factoryContract,
+                functionName: "getTokenAddress"
+            })
 
-            return contractAddress as `0x${string}`;
+            this.memeTokenAddress = result
+
+            this.memeTokenFactoryAddress = factoryContract;
+
+            // return contractAddress as `0x${string}`;
+            return factoryReceipt.transactionHash;
         } catch (error) {
             throw new Error('error creating meme token:', error);
         }
+    }
+
+    @Tool({
+        name: "get token address",
+        description: "get the address of the deployed meme"
+    })
+    async getMemeAddress() {
+        if (!this.memeTokenAddress) return "You don't have any deployed meme tokens"
+        return this.memeTokenAddress
     }
 
     @Tool({
@@ -81,7 +92,6 @@ export class MemeService {
             
         }
     }
-
 
     @Tool({
         name: 'buy-meme-eth',

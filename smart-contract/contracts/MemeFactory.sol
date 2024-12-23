@@ -63,6 +63,10 @@ contract MemeFactory {
         );
     }
 
+    function getTokenAddress() external view returns (address) {
+        return memeToken;
+    }
+
     // Swap Meme Token for ETH
     function swapMemeForETH(
         uint256 amountIn

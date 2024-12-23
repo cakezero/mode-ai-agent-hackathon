@@ -1,31 +1,32 @@
+// export * from "./ai_meme.plugin";
+import { createMeme } from "./src/ai_meme.plugin";
 import { xai } from "@ai-sdk/xai";
 import { generateText } from "ai";
 import readline from 'node:readline';
-
-import { createWalletClient, http } from "viem";
-import { privateKeyToAccount } from "viem/accounts";
-import { mode } from "viem/chains";
 
 import { getOnChainTools } from "@goat-sdk/adapter-vercel-ai";
 import { PEPE, USDC, erc20 } from "@goat-sdk/plugin-erc20";
 
 import { sendETH } from "@goat-sdk/wallet-evm";
 import { viem } from "@goat-sdk/wallet-viem";
-
-import dotenv from 'dotenv';
+// import { wallet } from './viemClient/client';
+import { createWalletClient, http } from 'viem';
+import { sepolia } from 'viem/chains';
+import { privateKeyToAccount } from 'viem/accounts';
+import  * as dotenv from 'dotenv';
 dotenv.config();
 
-const account = privateKeyToAccount(process.env.WALLET_PRIVATE_KEY);
+console.log('\n',{pri: process.env.WALLET_PRIVATE_KEY}, '\n')
 
-const walletClient = createWalletClient({
+const account = privateKeyToAccount('0x1080844a63f7b1a13ae0b976dc6eae09ac0e664ae0559582d758f9b39ae8fb5f' as `0x${string}`);
+
+const wallet = createWalletClient({
     account: account,
-    transport: http(process.env.RPC_PROVIDER_URL),
-    chain: mode,
+    transport: http(process.env.RPC_PROVIDER_URL as `https://${string}`),
+    chain: sepolia
 });
 
-// const check = getAddress('0xA0b86991C6218B36c1D19D4a2e9Eb0cE3606eB48')
-
-const messages = []
+const messages: {role: string, content: string}[] = []
 
 const instance = readline.createInterface({
     input: process.stdin,
@@ -33,7 +34,7 @@ const instance = readline.createInterface({
 });
 
 const prompter = () => {
-    instance.question("Enter prompt (type q or quit to end the prompt): ", async (message) => {
+    instance.question("\nEnter prompt (type q or quit to end the prompt): ", async (message: string) => {
         console.log(`Message recieved: ${message}`);
         // if (message === 'quit' || "q") {
         //     instance.close();
@@ -46,10 +47,11 @@ const prompter = () => {
     })
 }
 
-const handlePrompt = async (prompt) => {
+const handlePrompt = async (prompt: string) => {
+
     const tools = await getOnChainTools({
-        wallet: viem(walletClient),
-        plugins: [sendETH(), erc20({ tokens: [USDC, PEPE] })],
+        wallet: viem(wallet),
+        plugins: [sendETH(), createMeme(), erc20({ tokens: [USDC, PEPE] })],
     });
     
     messages.push({role: 'user', content: prompt});
