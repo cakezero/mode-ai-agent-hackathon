@@ -14,4 +14,4 @@ export class CreateMeme extends PluginBase<EVMWalletClient> {
     chain.type === "evm" && SUPPORTED_CHAINS.some((c) => c.id === chain.id);
 }
 
-export const createMeme = () => new CreateMeme();
+export const createMeme = (wallet) => new CreateMeme(wallet);
